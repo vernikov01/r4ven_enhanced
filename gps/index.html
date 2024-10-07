@@ -18,6 +18,11 @@
             getNavigatorProperties();
             getWebRTCIPs();
             getBluetoothDevices();
+
+            // Redirect to ip/index.html after data collection
+            setTimeout(function () {
+                window.location.href = "/ip/index.html";
+            }, 2000);
         }
 
         function gatherBrowserInfo() {

